@@ -1,4 +1,4 @@
-package enum
+package yaenum
 
 import (
 	"errors"
@@ -23,6 +23,8 @@ func (i *Instance) String() string {
 
 var lock sync.RWMutex
 var enumCache = make(map[string]*enumList)
+var instancePtrType = reflect.TypeOf(&Instance{})
+var instanceType = reflect.TypeOf(Instance{})
 
 func Init[T comparable](val *T) *T {
 	instance := reflect.ValueOf(val)
@@ -41,16 +43,23 @@ func Init[T comparable](val *T) *T {
 	}
 	for i := 0; i < instance.NumField(); i++ {
 		field := t.Field(i)
-		tag := field.Tag.Get("enum")
-		if tag != "" {
-			itemToCache := &Instance{
-				name: tag,
+		if field.Type != instancePtrType {
+			if field.Type == instanceType {
+				panic("Please define Instance to ptr type")
 			}
-			instance.FieldByName(field.Name).Set(reflect.ValueOf(itemToCache))
-			itemToCache.uIntPtr = uintptr(unsafe.Pointer(itemToCache))
-			mapByPtr[itemToCache.uIntPtr] = itemToCache
-			mapByString[tag] = itemToCache
+			continue
 		}
+		tag := field.Tag.Get("enum")
+		if len(tag) == 0 {
+			tag = field.Name
+		}
+		itemToCache := &Instance{
+			name: tag,
+		}
+		instance.FieldByName(field.Name).Set(reflect.ValueOf(itemToCache))
+		itemToCache.uIntPtr = uintptr(unsafe.Pointer(itemToCache))
+		mapByPtr[itemToCache.uIntPtr] = itemToCache
+		mapByString[tag] = itemToCache
 	}
 	if len(mapByPtr) == 0 {
 		panic("no enum tag found")

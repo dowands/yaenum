@@ -1,9 +1,10 @@
-## From
+# Yet Another Enum
+
+### Why
 Golang doesn't have a built-in enum solution, which can make it difficult to create and manage enums in your code. While aliases can be used as a workaround, they don't provide the full functionality of an enum. That's where yet-another-enum comes in - it provides a simple and efficient way to create and work with enums in Golang.
 
-## Example
-
-before, you create enum like this
+### Show me the code
+At before, we create enum like this
 ```go
 type timerType string
 
@@ -22,8 +23,8 @@ const (
 Now, you can just:
 ```go
 type timerType struct {
-    Every string `enum:"every"`
-    On    string `enum:"on"`
+    Every *yaenum.Instance `enum:"every"`
+    On    *yaenum.Instance `enum:"on"`
 }
 
 //init and export it
@@ -37,10 +38,10 @@ if on != val {
 }
 ```
 
-## Basic Implementation
+### Basic Implementation
 It's uses reflection to get tag and field information from the enum struct. However, to ensure efficient runtime performance, the reflection result is cached.
 
-## Features
+### Features
 - [x] string enum
 - [ ] int enum
 - [ ] custom enum

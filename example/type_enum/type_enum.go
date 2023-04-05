@@ -1,12 +1,12 @@
 package type_enum
 
 import (
-	enum "yet-another-enum/enum"
+	"github.com/dowands/yaenum"
 )
 
 type enumList struct {
-	Every *enum.Instance `enum:"every"`
-	On    *enum.Instance `enum:"on"`
+	Every *yaenum.Instance `enum:"every"`
+	On    *yaenum.Instance `enum:"on"`
 }
 
-var EnumList = enum.Init(&enumList{})
+var EnumList = yaenum.Init(&enumList{})

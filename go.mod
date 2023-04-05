@@ -1,3 +1,3 @@
-module yet-another-enum
+module github.com/dowands/yaenum
 
 go 1.19
