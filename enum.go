@@ -8,23 +8,21 @@ import (
 )
 
 type enumList struct {
-	ByName    map[string]*Instance
-	ByUintptr map[uintptr]*Instance
+	ByName    map[string]interface{}
+	ByUintptr map[uintptr]interface{}
 }
 
-type Instance struct {
+type Instance[T comparable] struct {
 	name    string
 	uIntPtr uintptr
 }
 
-func (i *Instance) String() string {
+func (i *Instance[T]) String() string {
 	return i.name
 }
 
 var lock sync.RWMutex
 var enumCache = make(map[string]*enumList)
-var instancePtrType = reflect.TypeOf(&Instance{})
-var instanceType = reflect.TypeOf(Instance{})
 
 func Init[T comparable](val *T) *T {
 	instance := reflect.ValueOf(val)
@@ -36,11 +34,13 @@ func Init[T comparable](val *T) *T {
 
 	lock.Lock()
 	defer lock.Unlock()
-	mapByPtr := make(map[uintptr]*Instance)
-	mapByString := make(map[string]*Instance)
+	mapByPtr := make(map[uintptr]interface{})
+	mapByString := make(map[string]interface{})
 	if instance.Kind() == reflect.Ptr {
 		instance = instance.Elem()
 	}
+	var instancePtrType = reflect.TypeOf(&Instance[T]{})
+	var instanceType = reflect.TypeOf(Instance[T]{})
 	for i := 0; i < instance.NumField(); i++ {
 		field := t.Field(i)
 		if field.Type != instancePtrType {
@@ -53,7 +53,7 @@ func Init[T comparable](val *T) *T {
 		if len(tag) == 0 {
 			tag = field.Name
 		}
-		itemToCache := &Instance{
+		itemToCache := &Instance[T]{
 			name: tag,
 		}
 		instance.FieldByName(field.Name).Set(reflect.ValueOf(itemToCache))
@@ -74,7 +74,7 @@ func Init[T comparable](val *T) *T {
 	return val
 }
 
-func ValueOf(val interface{}, value string) (*Instance, error) {
+func ValueOf[T comparable](val *T, value string) (*Instance[T], error) {
 	instance := reflect.ValueOf(val)
 	t := instance.Type()
 	if t.Kind() == reflect.Ptr {
@@ -89,7 +89,7 @@ func ValueOf(val interface{}, value string) (*Instance, error) {
 		return nil, errors.New("enum not initiated")
 	}
 	if v, ok := list.ByName[value]; ok {
-		return v, nil
+		return v.(*Instance[T]), nil
 	} else {
 		return nil, errors.New("no enum value found")
 	}

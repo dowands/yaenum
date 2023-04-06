@@ -4,9 +4,9 @@ import (
 	"github.com/dowands/yaenum"
 )
 
-type enumList struct {
-	Every *yaenum.Instance `enum:"every"`
-	On    *yaenum.Instance `enum:"on"`
+type Enum struct {
+	Every *yaenum.Instance[Enum] `enum:"every"`
+	On    *yaenum.Instance[Enum] `enum:"on"`
 }
 
-var EnumList = yaenum.Init(&enumList{})
+var EnumList = yaenum.Init[Enum](&Enum{})

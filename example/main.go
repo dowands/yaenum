@@ -9,7 +9,7 @@ import (
 func main() {
 	//check
 	on := type_enum.EnumList.On
-	val, _ := yaenum.ValueOf(type_enum.EnumList, "on")
+	val, _ := yaenum.ValueOf[type_enum.Enum](type_enum.EnumList, "on")
 	if on != val {
 		fmt.Printf("type is mismatch %s %s\n", on.String(), val.String())
 	} else {

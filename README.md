@@ -22,17 +22,17 @@ const (
 
 Now, you can just:
 ```go
-type timerType struct {
-    Every *yaenum.Instance `enum:"every"`
-    On    *yaenum.Instance `enum:"on"`
+type Enums struct {
+    Every *yaenum.Instance[Enums] `enum:"every"`
+    On    *yaenum.Instance[Enums] `enum:"on"`
 }
 
 //init and export it
-var EnumList = enum.Init(&enumList{})
+var EnumList = yaenum.Init[Enums](&Enums{})
 
 //use it
 on := EnumList.On
-val, _ := enum.ValueOf(EnumList, "on")
+val, _ := yaenum.ValueOf[type_enum.Enums](type_enum.EnumList, "on")
 if on != val {
     fmt.Printf("type is mismatch %s %s\n", on.String(), val.String())
 }
